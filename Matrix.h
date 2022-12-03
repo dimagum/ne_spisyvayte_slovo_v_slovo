@@ -50,5 +50,8 @@ public:
             }
         }
     }
+    ~Matrix() {
+        delete [] m_ptr;
+    }
 };
 
