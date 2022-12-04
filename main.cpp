@@ -24,6 +24,11 @@ int main() {
     add1 += add2;
     std::cout << add1 << "\n";
 
+    Complex<int> c1(3, 4);
+    std::cout << c1 << "\n" << c1 * c1 << "\n" << c1.abs() << "\n" << c1.sqr_abs() << "\n";
+    Complex<int> c2(5, 2);
+    std::cout << c1 * c2 << "\n" << c1 + c2 << "\n" << c1 - c2 << "\n";
+
 
     return 0;
 }
