@@ -237,5 +237,91 @@ namespace linalg {
             }
             return out;
         }
+
+        // функционал матрицы
+        T det() {
+            if (m_rows != m_cols) {
+                throw std::logic_error("not a square matrix\n");
+            }
+            T d = 0;
+
+            return d;
+        }
+
+        int rank() {
+            int r = std::min(m_rows, m_cols);
+
+
+            return r;
+        }
+
+        // структуры для спецификации вычисления нормы у матрицы с комплексными числами
+        template <class T_>
+        struct norm_func {
+            static double sqr_abs(T_ el) {
+                return el * el;
+            }
+        };
+
+        template <class T_>
+        struct norm_func<Complex<T_>> {
+            static double sqr_abs(Complex<T_> el) {
+                return el.sqr_abs();
+            }
+        };
+
+        double norm() {
+            double n = 0;
+
+            for (int i = 0; i < m_rows; ++i) {
+                for (int j = 0; j < m_cols; ++j) {
+                    n += norm_func<T>::sqr_abs((*this)[i][j]);
+                }
+            }
+
+            return sqrt(n);
+        }
+
+        T trace() {
+            T tr = 0;
+            for (int i = 0; i < std::min(m_rows, m_cols); ++i) {
+                tr += m_ptr[i * m_cols + i];
+            }
+
+            return tr;
+        }
+
+        friend Matrix<T> transpose(const Matrix<T> & m) {
+            Matrix<T> tmp(m.m_cols, m.m_rows);
+
+            for (int i = 0; i < m.m_cols; ++i) {
+                for (int j = 0; j < m.m_rows; ++j) {
+                    tmp(i, j) = m(j, i);
+                }
+            }
+
+            return tmp;
+        }
+
+        friend Matrix<T> pow(const Matrix<T> & m, int n) {
+            Matrix<T> tmp(m);
+            for (int i = 0; i < n - 1; ++i) {
+                tmp = tmp * m;
+            }
+
+            return tmp;
+        }
+        friend Matrix<T> bin_pow(const Matrix<T> & m, int n) {
+            if (n == 1) {
+                return m;
+            }
+
+            Matrix<T> tmp(m);
+            if (n % 2 != 0) {
+                return tmp * bin_pow(tmp, n - 1);
+            }
+            tmp = bin_pow(tmp, n / 2);
+            return tmp * tmp;
+        }
     };
 }
