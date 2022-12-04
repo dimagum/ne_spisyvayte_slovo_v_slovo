@@ -1,7 +1,9 @@
 #pragma once
+
+#include <iomanip>
 #include "Complex.h"
 
-template<class T>
+template<class T = double>
 class Matrix {
     T * m_ptr;
     unsigned m_rows;
@@ -46,7 +48,7 @@ public:
         m_ptr = new T[m_rows * m_cols];
         for (int i = 0; i < m_rows; ++i) {
             for (int j = 0; j < m_cols; ++j) {
-                m_ptr[i * m_cols + 0] = *((lst.begin() + i)->begin() + j);
+                m_ptr[i * m_cols + j] = *((lst.begin() + i)->begin() + j);
             }
         }
     }
@@ -134,7 +136,7 @@ public:
     }
 
     // арифметические операции
-    Matrix<T> & operator+=(const Matrix<T> & rhs) {
+    Matrix<T> operator+=(const Matrix<T> & rhs) {
         if (m_rows != rhs.m_rows || m_cols != rhs.m_cols) {
             throw std::logic_error("matrix dimensions are not matching\n");
         }
@@ -147,12 +149,12 @@ public:
 
         return *this;
     }
-    friend Matrix<T> & operator+(Matrix<T> lhs, const Matrix<T> & rhs) {
+    friend Matrix<T> operator+(Matrix<T> lhs, const Matrix<T> & rhs) {
         lhs += rhs;
         return lhs;
     }
 
-    Matrix<T> & operator-=(const Matrix<T> & rhs) {
+    Matrix<T> operator-=(const Matrix<T> & rhs) {
         if (m_rows != rhs.m_rows || m_cols != rhs.m_cols) {
             throw std::logic_error("matrix dimensions are not matching\n");
         }
@@ -165,9 +167,58 @@ public:
 
         return *this;
     }
-    friend Matrix<T> & operator-(Matrix<T> lhs, const Matrix<T> & rhs) {
+    friend Matrix<T> operator-(Matrix<T> lhs, const Matrix<T> & rhs) {
         lhs -= rhs;
         return lhs;
+    }
+
+    friend Matrix<T> operator*(const Matrix<T> & lhs, const Matrix<T> & rhs) {
+        if (lhs.m_cols != rhs.m_rows) {
+            throw std::logic_error("matrix dimensions are not matching\n");
+        }
+        
+        Matrix<T> tmp(lhs.m_rows, rhs.m_cols);
+        for (int i = 0; i < lhs.m_rows; ++i) {
+            for (int j = 0; j < rhs.m_cols; ++j) {
+                for (int k = 0; k < lhs.m_cols; ++k) {
+                    tmp(i, j) += lhs(i, k) * rhs(k, j);
+                }
+            }
+        }
+
+        return tmp;
+    }
+    Matrix<T> & operator*=(T k) {
+        for (int i = 0; i < m_rows; ++i) {
+            for (int j = 0; j < m_cols; ++j) {
+                m_ptr[i * m_cols + j] *= k;
+            }
+        }
+
+        return *this;
+    }
+    friend Matrix<T> operator*(T k, Matrix<T> rhs) {
+        rhs *= k;
+        return rhs;
+    }
+    friend Matrix<T> operator*(Matrix<T> lhs, T k) {
+        lhs *= k;
+        return lhs;
+    }
+
+    // взаимодействие с потоком вывода и оператором <<
+    friend std::ostream & operator<<(std::ostream & out, const Matrix<T> & m) {
+        for (int i = 0; i < m.m_rows; ++i) {
+            out << '|';
+            for (int j = 0; j < m.m_cols; ++j) {
+                out << std::right << std::setw(7) << m(i, j);
+                if (j != m.m_cols - 1) {
+                    out << " ";
+                }
+            }
+            out << "|\n";
+        }
+        return out;
     }
 };
 
