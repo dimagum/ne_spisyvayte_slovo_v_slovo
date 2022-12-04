@@ -92,6 +92,7 @@ public:
         return *this;
     }
 
+    // доступ к элементам
     class Proxy {
         T * ptr;
     public:
@@ -104,32 +105,69 @@ public:
         }
     };
 
-    Proxy operator[](unsigned idx) {
+    Proxy operator[](unsigned idx) {  // доступ к элементам через квадратные скобки (есть недостаток: проверка второго индекса)
         if (idx >= m_rows) {
             throw std::logic_error("index out of range\n");
         }
         return Proxy(&m_ptr[idx * m_cols]);
     }
 
-    Proxy operator[](unsigned idx) const {
+    Proxy operator[](unsigned idx) const { // доступ к элементам для константной матрицы через квадратные скобки (есть недостаток: проверка второго индекса)
         if (idx >= m_rows) {
             throw std::logic_error("index out of range\n");
         }
         return Proxy(&m_ptr[idx * m_cols]);
     }
 
-    T & operator()(int i, int j) {
+    T & operator()(int i, int j) {  // доступ к элементам через круглые скобки (вызов функции)
         if (i >= m_rows || j >= m_cols) {
             throw std::logic_error("index out of range\n");
         }
         return m_ptr[i * m_cols + j];
     }
 
-    const T & operator()(int i, int j) const {
+    const T & operator()(int i, int j) const { // доступ к элементам для константной матрицы через круглые скобки (вызов функции)
         if (i >= m_rows || j >= m_cols) {
             throw std::logic_error("index out of range\n");
         }
         return m_ptr[i * m_cols + j];
+    }
+
+    // арифметические операции
+    Matrix<T> & operator+=(const Matrix<T> & rhs) {
+        if (m_rows != rhs.m_rows || m_cols != rhs.m_cols) {
+            throw std::logic_error("matrix dimensions are not matching\n");
+        }
+
+        for (int i = 0; i < m_rows; ++i) {
+            for (int j = 0; j < m_cols; ++j) {
+                m_ptr[i * m_rows + j] += rhs.m_ptr[i * rhs.m_rows + j];
+            }
+        }
+
+        return *this;
+    }
+    friend Matrix<T> & operator+(Matrix<T> lhs, const Matrix<T> & rhs) {
+        lhs += rhs;
+        return lhs;
+    }
+
+    Matrix<T> & operator-=(const Matrix<T> & rhs) {
+        if (m_rows != rhs.m_rows || m_cols != rhs.m_cols) {
+            throw std::logic_error("matrix dimensions are not matching\n");
+        }
+
+        for (int i = 0; i < m_rows; ++i) {
+            for (int j = 0; j < m_cols; ++j) {
+                m_ptr[i * m_rows + j] -= rhs.m_ptr[i * rhs.m_rows + j];
+            }
+        }
+
+        return *this;
+    }
+    friend Matrix<T> & operator-(Matrix<T> lhs, const Matrix<T> & rhs) {
+        lhs -= rhs;
+        return lhs;
     }
 };
 
