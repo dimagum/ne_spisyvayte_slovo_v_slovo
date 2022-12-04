@@ -91,15 +91,19 @@ namespace linalg {
             delete[] m_ptr;
 
             m_rows = rhs.m_rows;
-            m_cols = rhs.m_columns;
+            m_cols = rhs.m_cols;
 
             m_ptr = rhs.m_ptr;
 
             rhs.m_ptr = nullptr;
-            rhs.m_rows = rhs.m_columns = 0;
+            rhs.m_rows = rhs.m_cols = 0;
 
             return *this;
         }
+
+        //operator Matrix<T>() {
+
+        //}
 
         // доступ к элементам
         class Proxy {
@@ -239,11 +243,40 @@ namespace linalg {
         }
 
         // функционал матрицы
-        T det() {
+        friend void getDecreasedMatrix(const Matrix<T> & mat, Matrix<T> & tmp, int p, int q) {
+            unsigned n = mat.m_rows;
+            int i = 0, j = 0;
+
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < n; col++) {
+                    if (row != p && col != q) {
+                        tmp(i, j++) = mat(row, col);
+                        if (j == n - 1) {
+                            j = 0;
+                            i++;
+                        }
+                    }
+                }
+            }
+        }
+
+        T det() const {
             if (m_rows != m_cols) {
                 throw std::logic_error("not a square matrix\n");
             }
+
+            if (m_rows == 1) {
+                return (*this)(0, 0);
+            }
+
             T d = 0;
+            int sgn = 1;
+            Matrix<T> tmp(m_rows - 1, m_rows - 1);
+            for (int i = 0; i < m_rows; ++i) {
+                getDecreasedMatrix(*this, tmp, 0, i);
+                d += sgn * (*this)(0, i) * tmp.det();
+                sgn *= -1;
+            }
 
             return d;
         }
@@ -302,6 +335,38 @@ namespace linalg {
 
             return tmp;
         }
+
+        friend void get_adj(const Matrix<T> & mat, Matrix<> & res) {
+            if (mat.m_rows != res.m_rows || mat.m_cols != res.m_cols) {
+                throw std::logic_error("matrix dimensions are not matching\n");
+            }
+            if (mat.m_rows != res.m_cols) {
+                throw std::logic_error("not a square matrix\n");
+            }
+            for (int i = 0; i < res.m_rows; ++i) {
+                for (int j = 0; j < res.m_cols; ++j) {
+                    Matrix<T> tmp(mat.m_rows - 1, mat.m_rows - 1);
+                    getDecreasedMatrix(mat, tmp, i, j);
+                    int sgn = (i + j) % 2 == 0 ? 1 : -1;
+                    res(j, i) = (double) sgn * tmp.det();
+                }
+            }
+        }
+
+        friend Matrix<> inv(const Matrix<T> & m) {
+            if (m.det() == 0) {
+                throw std::logic_error("matrix is singular\n");
+            }
+
+            Matrix<> res(m.m_rows, m.m_cols);
+
+            get_adj(m, res);
+
+            // res *= ((double) 1 / m.det());
+
+            return res;
+        }
+        // friend Matrix<Complex<>> inv(Matrix<Complex<T>> m);
 
         friend Matrix<T> pow(const Matrix<T> & m, int n) {
             Matrix<T> tmp(m);
