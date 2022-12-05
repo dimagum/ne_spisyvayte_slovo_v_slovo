@@ -152,15 +152,24 @@ public:
     }
 
     friend std::ostream & operator<<(std::ostream & out, const Complex<T> & c) {
-        out << std::right << std::setw(4) << c.re << " ";
-        if (c.im >= 0) {
-            out << "+ " << std::right << std::setw(4) << c.im;
-            out << " * i ";
+
+        if (c.re >= 0) {
+            if (c.im >= 0) {
+                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << " " << c.re << " " << "+ " << c.im << " * i ";
+            }
+            else {
+                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << "-" << c.re << " " << "- " << -c.im << " * i ";
+            }
         }
         else {
-            out << "- " << std::right << std::setw(4) << -c.im;
-            out << " * i ";
+            if (c.im >= 0) {
+                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << " " << -c.re << " " << "+ " << c.im << " * i ";
+            }
+            else {
+                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << "-" << -c.re << " " << "- " << -c.im << " * i ";
+            }
         }
+
         return out;
     }
 };

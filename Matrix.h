@@ -416,8 +416,9 @@ namespace linalg {
                         res(j, i).imag((double) sgn * tmp_det.imag());
                         T_ a = res(j, i).real();
                         T_ b = res(j, i).imag();
-                        T_ c = res(j, i).real();
-                        T_ d = res(j, i).imag();
+                        T_ c = mat_det.real();
+                        T_ d = mat_det.imag();
+                        std::cout << a << " " << b << " " << c << " " << d << "\n";
 
                         res(j, i).real((double) (a * c + b * d) / (c * c + d * d));
                         res(j, i).imag((double) (b * c - a * d) / (c * c + d * d));
