@@ -425,30 +425,40 @@ namespace linalg {
                 }
             }
         };
+/*
+        template<class T1>
+        struct inv_func {
+            template<class T2>
+            friend Matrix<> inv(const Matrix<T> & m) {
+                if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
+                    throw std::logic_error("matrix is singular\n");
+                }
 
+                Matrix<> res(m.m_rows, m.m_cols);
 
-        friend Matrix<> inv(const Matrix<T> & m) {
-            if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
-                throw std::logic_error("matrix is singular\n");
+                adj_func<T>::get_adj(m, res);
+
+                return res;
             }
 
-            Matrix<> res(m.m_rows, m.m_cols);
+            template<class T2>
+            friend Matrix<Complex<>> inv(const Matrix<Complex<T>> & m) {
+                if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
+                    throw std::logic_error("matrix is singular\n");
+                }
 
-            adj_func<T>::get_adj(m, res);
+                Matrix<Complex<>> res(m.m_rows, m.m_cols);
 
-            return res;
-        }
-        /*friend Matrix<Complex<>> inv(const Matrix<Complex<T>> & m) {
-            if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
-                throw std::logic_error("matrix is singular\n");
+                adj_func<T>::get_adj(m, res);
+
+                return res;
             }
-
-            Matrix<Complex<>> res(m.m_rows, m.m_cols);
-
-            adj_func<T>::get_adj(m, res);
-
-            return res;
-        }*/
+        };
+*/
+        template<class T1>
+        friend Matrix<> inv(const Matrix<T1> & m);
+        template<class T1>
+        friend Matrix<Complex<>> inv(const Matrix<Complex<T1>> & m);
 
         friend Matrix<T> pow(const Matrix<T> & m, int n) {
             Matrix<T> tmp(m);
@@ -471,4 +481,29 @@ namespace linalg {
             return tmp * tmp;
         }
     };
+
+    template<class T>
+    Matrix<> inv(const Matrix<T> & m) {
+        if (Matrix<T>::template sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
+            throw std::logic_error("matrix is singular\n");
+        }
+
+        Matrix<> res(m.m_rows, m.m_cols);
+
+        Matrix<T>::template adj_func<T>::get_adj(m, res);
+
+        return res;
+    }
+    template<class T>
+    Matrix<Complex<>> inv(const Matrix<Complex<T>> & m) {
+        if (Matrix<Complex<T>>::template sqr_func<Complex<T>>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
+            throw std::logic_error("matrix is singular\n");
+        }
+
+        Matrix<Complex<>> res(m.m_rows, m.m_cols);
+
+        Matrix<Complex<T>>::template adj_func<Complex<T>>::get_adj(m, res);
+
+        return res;
+    }
 }

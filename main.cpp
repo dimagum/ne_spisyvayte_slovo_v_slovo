@@ -57,7 +57,7 @@ int main() {
 
     linalg::Matrix<Complex<int>> inv_complex(std::move(to_det_complex));
 
-    //std::cout << inv_complex << "\n" << inv(inv_complex);
+    std::cout << inv_complex << "\n" << inv(inv_complex);
 
     return 0;
 }
