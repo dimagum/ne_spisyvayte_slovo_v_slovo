@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <iomanip>
 #include "Complex.h"
 
@@ -62,6 +63,12 @@ namespace linalg {
         ~Matrix() {
             delete[] m_ptr;
         }
+
+        // геттеры
+        unsigned rows() { return m_rows; }
+        unsigned rows() const { return m_rows; }
+        unsigned cols() { return m_cols; }
+        unsigned cols() const { return m_cols; }
 
 
         // перегрузка операторов
@@ -290,14 +297,14 @@ namespace linalg {
 
         // структуры для спецификации вычисления нормы у матрицы с комплексными числами
         template <class T_>
-        struct norm_func {
+        struct sqr_func {
             static double sqr_abs(T_ el) {
                 return el * el;
             }
         };
 
         template <class T_>
-        struct norm_func<Complex<T_>> {
+        struct sqr_func<Complex<T_>> {
             static double sqr_abs(Complex<T_> el) {
                 return el.sqr_abs();
             }
@@ -308,7 +315,7 @@ namespace linalg {
 
             for (int i = 0; i < m_rows; ++i) {
                 for (int j = 0; j < m_cols; ++j) {
-                    n += norm_func<T>::sqr_abs((*this)[i][j]);
+                    n += sqr_func<T>::sqr_abs((*this)[i][j]);
                 }
             }
 
@@ -336,37 +343,112 @@ namespace linalg {
             return tmp;
         }
 
-        friend void get_adj(const Matrix<T> & mat, Matrix<> & res) {
-            if (mat.m_rows != res.m_rows || mat.m_cols != res.m_cols) {
-                throw std::logic_error("matrix dimensions are not matching\n");
-            }
-            if (mat.m_rows != res.m_cols) {
-                throw std::logic_error("not a square matrix\n");
-            }
-            for (int i = 0; i < res.m_rows; ++i) {
-                for (int j = 0; j < res.m_cols; ++j) {
-                    Matrix<T> tmp(mat.m_rows - 1, mat.m_rows - 1);
-                    getDecreasedMatrix(mat, tmp, i, j);
-                    int sgn = (i + j) % 2 == 0 ? 1 : -1;
-                    res(j, i) = (double) sgn * tmp.det();
+
+        template<class T_>
+        struct adj_func {
+            static void getDecreasedMatrix(const Matrix<T_> & mat, Matrix<T_> & tmp, int p, int q) {
+                unsigned n = mat.rows();
+                int i = 0, j = 0;
+
+                for (int row = 0; row < n; row++) {
+                    for (int col = 0; col < n; col++) {
+                        if (row != p && col != q) {
+                            tmp(i, j++) = mat(row, col);
+                            if (j == n - 1) {
+                                j = 0;
+                                i++;
+                            }
+                        }
+                    }
                 }
             }
-        }
+            static void get_adj(const Matrix<T_> & mat, Matrix<> & res) {
+                if (mat.rows() != res.rows() || mat.cols() != res.cols()) {
+                    throw std::logic_error("matrix dimensions are not matching\n");
+                }
+                if (mat.rows() != res.cols()) {
+                    throw std::logic_error("not a square matrix\n");
+                }
+                T_ mat_det = mat.det();
+                for (int i = 0; i < res.rows(); ++i) {
+                    for (int j = 0; j < res.cols(); ++j) {
+                        Matrix<T> tmp(mat.rows() - 1, mat.rows() - 1);
+                        getDecreasedMatrix(mat, tmp, i, j);
+                        int sgn = (i + j) % 2 == 0 ? 1 : -1;
+                        res(j, i) = (double) sgn * tmp.det() / mat_det;
+                    }
+                }
+            }
+        };
+        template<class T_>
+        struct adj_func<Complex<T_>> {
+            static void getDecreasedMatrix(const Matrix<Complex<T_>> & mat, Matrix<Complex<T_>> & tmp, int p, int q) {
+                unsigned n = mat.rows();
+                int i = 0, j = 0;
+
+                for (int row = 0; row < n; row++) {
+                    for (int col = 0; col < n; col++) {
+                        if (row != p && col != q) {
+                            tmp(i, j++) = mat(row, col);
+                            if (j == n - 1) {
+                                j = 0;
+                                i++;
+                            }
+                        }
+                    }
+                }
+            }
+            static void get_adj(const Matrix<Complex<T_>> & mat, Matrix<Complex<>> & res) {
+                if (mat.rows() != res.rows() || mat.cols() != res.cols()) {
+                    throw std::logic_error("matrix dimensions are not matching\n");
+                }
+                if (mat.rows() != res.cols()) {
+                    throw std::logic_error("not a square matrix\n");
+                }
+                Complex<T_> mat_det = mat.det();
+                for (int i = 0; i < res.rows(); ++i) {
+                    for (int j = 0; j < res.cols(); ++j) {
+                        Matrix<Complex<T_>> tmp(mat.rows() - 1, mat.rows() - 1);
+                        getDecreasedMatrix(mat, tmp, i, j);
+                        int sgn = (i + j) % 2 == 0 ? 1 : -1;
+                        Complex<T_> tmp_det = tmp.det();
+                        res(j, i).real((double) sgn * tmp_det.real());
+                        res(j, i).imag((double) sgn * tmp_det.imag());
+                        T_ a = res(j, i).real();
+                        T_ b = res(j, i).imag();
+                        T_ c = res(j, i).real();
+                        T_ d = res(j, i).imag();
+
+                        res(j, i).real((double) (a * c + b * d) / (c * c + d * d));
+                        res(j, i).imag((double) (b * c - a * d) / (c * c + d * d));
+                    }
+                }
+            }
+        };
+
 
         friend Matrix<> inv(const Matrix<T> & m) {
-            if (m.det() == 0) {
+            if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
                 throw std::logic_error("matrix is singular\n");
             }
 
             Matrix<> res(m.m_rows, m.m_cols);
 
-            get_adj(m, res);
-
-            // res *= ((double) 1 / m.det());
+            adj_func<T>::get_adj(m, res);
 
             return res;
         }
-        // friend Matrix<Complex<>> inv(Matrix<Complex<T>> m);
+        /*friend Matrix<Complex<>> inv(const Matrix<Complex<T>> & m) {
+            if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
+                throw std::logic_error("matrix is singular\n");
+            }
+
+            Matrix<Complex<>> res(m.m_rows, m.m_cols);
+
+            adj_func<T>::get_adj(m, res);
+
+            return res;
+        }*/
 
         friend Matrix<T> pow(const Matrix<T> & m, int n) {
             Matrix<T> tmp(m);

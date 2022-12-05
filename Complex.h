@@ -97,6 +97,25 @@ public:
     }
 
 
+    friend bool operator==(const Complex<T> & lhs, const Complex<T> & rhs) {
+        return (lhs.re == rhs.re && lhs.im == rhs.im);
+    }
+    friend bool operator!=(const Complex<T> & lhs, const Complex<T> & rhs) {
+        return !(lhs == rhs);
+    }
+    friend bool operator>(const Complex<T> & lhs, const Complex<T> & rhs) {
+        return ((lhs.re * lhs.re + lhs.im * lhs.im) > (rhs.re * rhs.re + rhs.im * rhs.im));
+    }
+    friend bool operator<=(const Complex<T> & lhs, const Complex<T> & rhs) {
+        return !(lhs > rhs);
+    }
+    friend bool operator<(const Complex<T> & lhs, const Complex<T> & rhs) {
+        return ((lhs.re * lhs.re + lhs.im * lhs.im) < (rhs.re * rhs.re + rhs.im * rhs.im));
+    }
+    friend bool operator>=(const Complex<T> & lhs, const Complex<T> & rhs) {
+        return !(lhs < rhs);
+    }
+
 
     friend Complex<T> operator!(Complex<T> c) {
         return Complex<T>(c.re, -c.im);

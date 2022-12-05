@@ -42,7 +42,10 @@ int main() {
                                                     {Complex<int>(4, 1), Complex<int>(8, 3), Complex<int>(7, 2)}};
 
     std::cout << to_norm_complex.norm() << "\n";
-    std::cout << to_norm_complex.det() << "\n";
+
+    linalg::Matrix<Complex<int>> to_det_complex(std::move(to_norm_complex));
+
+    std::cout << to_det_complex.det() << "\n";
 
     linalg::Matrix<int> inv1 = {{1, 1, 1}, {2, 2, 1}, {1, 2, 2}};
 
@@ -51,6 +54,10 @@ int main() {
     linalg::Matrix<> inv2 = {{1, 1, 1}, {2, 2, 1}, {1, 2, 2}};
 
     std::cout << inv2 * inv(inv2) << "\n";
+
+    linalg::Matrix<Complex<int>> inv_complex(std::move(to_det_complex));
+
+    //std::cout << inv_complex << "\n" << inv(inv_complex);
 
     return 0;
 }
