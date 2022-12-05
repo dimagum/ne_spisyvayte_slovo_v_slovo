@@ -31,7 +31,21 @@ int main() {
 
     linalg::Matrix<int> to_det = {{1, 1, 1}, {2, 2, 1}, {1, 2, 2}};
 
-    std::cout << to_det.det();
+    std::cout << to_det.det() << "\n";
+
+    linalg::Matrix<int> to_rank1 = {{1, 2, 3, 4}, {5, 2, 6, 7}, {9, 3, 5, 1}};
+    linalg::Matrix<int> to_rank2 = {{1, 2, 3, 4}, {5, 2, 6, 7}, {1, 2, 3, 4}};
+
+    std::cout << to_rank1.rank() << " " << to_rank2.rank() << "\n";
+
+    linalg::Matrix<Complex<int>> to_rank_complex1 = {{Complex<int>(7, 1), Complex<int>(5, 1), Complex<int>(1, 5), Complex<int>(9, 2)},
+                                                    {Complex<int>(9, 2), Complex<int>(7, 2), Complex<int>(4, 8), Complex<int>(4, 3)},
+                                                    {Complex<int>(4, 1), Complex<int>(8, 3), Complex<int>(7, 2), Complex<int>(1, 5)}};
+    linalg::Matrix<Complex<int>> to_rank_complex2 = {{Complex<int>(7, 1), Complex<int>(5, 1), Complex<int>(1, 5), Complex<int>(9, 2)},
+                                                     {Complex<int>(9, 2), Complex<int>(7, 2), Complex<int>(4, 8), Complex<int>(4, 3)},
+                                                     {Complex<int>(7, 1), Complex<int>(5, 1), Complex<int>(1, 5), Complex<int>(9, 2)}};
+
+    std::cout << to_rank_complex1.rank() << " " << to_rank_complex2.rank() << "\n";
 
     linalg::Matrix<int> to_norm(std::move(to_det));
 

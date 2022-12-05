@@ -288,9 +288,113 @@ namespace linalg {
             return d;
         }
 
+        friend void row_swap(Matrix<T> & to_swap, int r1, int r2, int c) {
+            for (int i = 0; i < c; ++i) {
+                std::swap(to_swap(r1, i), to_swap(r2, i));
+            }
+        }
+
+        template<class T_>
+        struct rows_manipulation {
+            static void change(Matrix<> & tmp, int col, int row, int r) {
+                double m = (double) tmp(col, row) / tmp(row, row);
+                for (int i = 0; i < tmp.cols(); ++i) {
+                    tmp(col, i) -= m * tmp(row, i);
+                }
+            }
+            static void row_reducing(Matrix<T_> res, int r, int m_rows, int m_cols) {
+                Matrix<> tmp(res.rows(), res.cols());
+                for (int i = 0; i < tmp.rows(); ++i) {
+                    for (int j = 0; j < tmp.cols(); ++j) {
+                        tmp(i, j) = (double) res(i, j);
+                    }
+                }
+                for (int row = 0; row < r; ++row) {
+                    if (tmp(row, row) != 0) {
+                        for (int col = 0; col < m_rows; ++col) {
+                            if (col != row) {
+                                rows_manipulation<T_>::change(tmp, col, row, r);
+                            }
+                        }
+                    }
+                    else {
+                        bool to_reduce = true;
+                        for (int i = row + 1; i < m_rows; ++i) {
+                            if (tmp(i, row) <= std::numeric_limits<T_>::epsilon()) {
+                                row_swap(tmp, row, i, r);
+                                to_reduce = false;
+                                break;
+                            }
+                        }
+
+                        if (to_reduce) {
+                            r--;
+                            for (int i = 0; i < m_rows; ++i) {
+                                tmp(i, row) = tmp(i, r);
+                            }
+                        }
+                        row--;
+                    }
+                }
+                std::cout << "\n" << tmp;
+            }
+        };
+        template<class T_>
+        struct rows_manipulation<Complex<T_>> {
+            static void change(Matrix<Complex<>> & tmp, int col, int row, int r) {
+                T_ a = tmp(col, row).real();
+                T_ b = tmp(col, row).imag();
+                T_ c = tmp(row, row).real();
+                T_ d = tmp(row, row).imag();
+                Complex<> m((a * c + b * d) / (c * c + d * d), (b * c + a * d) / (c * c + d * d));
+                for (int i = 0; i < tmp.cols(); ++i) {
+                    Complex<> to_subtract(tmp(row, i).real(), tmp(row, i).imag());
+                    tmp(col, i) -= m * to_subtract;
+                }
+            }
+            static void row_reducing(Matrix<Complex<T_>> & res, int & r, int m_rows, int m_cols) {
+                Matrix<Complex<>> tmp(res.rows(), res.cols());
+                for (int i = 0; i < tmp.rows(); ++i) {
+                    for (int j = 0; j < tmp.cols(); ++j) {
+                        tmp(i, j).real((double) res(i, j).real());
+                        tmp(i, j).imag((double) res(i, j).imag());
+                    }
+                }
+                for (int row = 0; row < r; ++row) {
+                    if (tmp(row, row) != 0) {
+                        for (int col = 0; col < m_rows; ++col) {
+                            if (col != row) {
+                                rows_manipulation<Complex<T_>>::change(tmp, col, row, r);
+                            }
+                        }
+                    }
+                    else {
+                        bool to_reduce = true;
+                        for (int i = row + 1; i < m_rows; ++i) {
+                            if (tmp(i, row) <= std::numeric_limits<T_>::epsilon()) {
+                                row_swap(tmp, row, i, r);
+                                to_reduce = false;
+                                break;
+                            }
+                        }
+
+                        if (to_reduce) {
+                            r--;
+                            for (int i = 0; i < m_rows; ++i) {
+                                tmp(i, row) = tmp(i, r);
+                            }
+                        }
+                        row--;
+                    }
+                }
+            }
+        };
+
         int rank() {
+            Matrix<T> tmp = (*this);
             int r = std::min(m_rows, m_cols);
 
+            rows_manipulation<T>::row_reducing(tmp, r, m_rows, m_cols);
 
             return r;
         }
@@ -418,7 +522,6 @@ namespace linalg {
                         T_ b = res(j, i).imag();
                         T_ c = mat_det.real();
                         T_ d = mat_det.imag();
-                        std::cout << a << " " << b << " " << c << " " << d << "\n";
 
                         res(j, i).real((double) (a * c + b * d) / (c * c + d * d));
                         res(j, i).imag((double) (b * c - a * d) / (c * c + d * d));

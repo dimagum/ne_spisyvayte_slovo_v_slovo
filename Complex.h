@@ -98,7 +98,7 @@ public:
 
 
     friend bool operator==(const Complex<T> & lhs, const Complex<T> & rhs) {
-        return (lhs.re == rhs.re && lhs.im == rhs.im);
+        return (std::abs(lhs.re - rhs.re) <= std::numeric_limits<T>::epsilon() && std::abs(lhs.im - rhs.im) <= std::numeric_limits<T>::epsilon());
     }
     friend bool operator!=(const Complex<T> & lhs, const Complex<T> & rhs) {
         return !(lhs == rhs);
@@ -114,6 +114,44 @@ public:
     }
     friend bool operator>=(const Complex<T> & lhs, const Complex<T> & rhs) {
         return !(lhs < rhs);
+    }
+
+    friend bool operator==(const Complex<T> & lhs, T rhs) {
+        return (std::abs(lhs.re - rhs) <= std::numeric_limits<T>::epsilon() && std::abs(lhs.im - 0) <= std::numeric_limits<T>::epsilon());
+    }
+    friend bool operator!=(const Complex<T> & lhs, T rhs) {
+        return !(lhs == rhs);
+    }
+    friend bool operator>(const Complex<T> & lhs, T rhs) {
+        return ((lhs.re * lhs.re + lhs.im * lhs.im) > (rhs * rhs + 0 * 0));
+    }
+    friend bool operator<=(const Complex<T> & lhs, T rhs) {
+        return !(lhs > rhs);
+    }
+    friend bool operator<(const Complex<T> & lhs, T rhs) {
+        return ((lhs.re * lhs.re + lhs.im * lhs.im) < (rhs * rhs + 0 * 0));
+    }
+    friend bool operator>=(const Complex<T> & lhs, T rhs) {
+        return !(lhs < rhs);
+    }
+
+    friend bool operator==(T lhs, const Complex<T> & rhs) {
+        return rhs == lhs;
+    }
+    friend bool operator!=(T lhs, const Complex<T> & rhs) {
+        return rhs != lhs;
+    }
+    friend bool operator>(T lhs, const Complex<T> & rhs) {
+        return rhs < lhs;
+    }
+    friend bool operator<=(T lhs, const Complex<T> & rhs) {
+        return rhs >= lhs;
+    }
+    friend bool operator<(T lhs, const Complex<T> & rhs) {
+        return rhs > lhs;
+    }
+    friend bool operator>=(T lhs, const Complex<T> & rhs) {
+        return rhs <= lhs;
     }
 
 
@@ -155,18 +193,18 @@ public:
 
         if (c.re >= 0) {
             if (c.im >= 0) {
-                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << " " << c.re << " " << "+ " << c.im << " * i ";
+                out << std::scientific << std::setprecision(4) << " " << c.re << " " << "+ " << c.im << " * i ";
             }
             else {
-                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << "-" << c.re << " " << "- " << -c.im << " * i ";
+                out << std::scientific << std::setprecision(4) << " " << c.re << " " << "- " << -c.im << " * i ";
             }
         }
         else {
             if (c.im >= 0) {
-                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << " " << -c.re << " " << "+ " << c.im << " * i ";
+                out << std::scientific << std::setprecision(4) << "-" << -c.re << " " << "+ " << c.im << " * i ";
             }
             else {
-                out << std::scientific << std::setprecision(4) << std::right << std::setw(5) << "-" << -c.re << " " << "- " << -c.im << " * i ";
+                out << std::scientific << std::setprecision(4) << "-" << -c.re << " " << "- " << -c.im << " * i ";
             }
         }
 
