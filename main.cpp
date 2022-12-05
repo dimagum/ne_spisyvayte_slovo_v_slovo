@@ -57,7 +57,13 @@ int main() {
 
     linalg::Matrix<Complex<int>> inv_complex(std::move(to_det_complex));
 
-    std::cout << inv_complex << "\n" << inv(inv_complex);
+    std::cout << inv_complex << "\n" << inv(inv_complex) << "\n";
+
+    linalg::Matrix<Complex<>> inv_complex_double = {{Complex<double>(7, 1), Complex<double>(5, 1), Complex<double>(1, 5)},
+                                                    {Complex<double>(9, 2), Complex<double>(7, 2), Complex<double>(4, 8)},
+                                                    {Complex<double>(4, 1), Complex<double>(8, 3), Complex<double>(7, 2)}};
+
+    std::cout << inv_complex_double << "\n" << inv(inv_complex_double) << "\n" << inv_complex_double * inv(inv_complex_double);
 
     return 0;
 }
