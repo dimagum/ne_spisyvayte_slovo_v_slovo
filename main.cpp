@@ -5,7 +5,7 @@
 
 
 int main() {
-// /*
+
     linalg::Matrix<int> m1(3, 4);  // проверка конструкторов
     linalg::Matrix<int> m2(m1);
     linalg::Matrix<int> m3(std::move(m2));
@@ -81,9 +81,8 @@ int main() {
 
     std::cout << "mat complex * inverse mat complex:\n" << inv_complex_double << "\n" << inv(inv_complex_double)
               << "\n" << inv_complex_double * inv(inv_complex_double);
-// */
 
-// /*
+/*
     // тесты вывода в файлы и чтения из файлов
     // текстовые
     linalg::Matrix<int> m_init = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
@@ -121,9 +120,9 @@ int main() {
     linalg::Matrix<Complex<double>> m_newcd = linalg::TextMode<Complex<double>>::read("matrixcd.txt");
 
     std::cout << m_newcd;
-// */
+*/
 
-// /*
+/*
     // бинарные
     linalg::Matrix<int> m_init_b = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
@@ -143,7 +142,7 @@ int main() {
 
     std::cout << m_new1_cd << "\n";
 
-// */
+*/
 
     linalg::Matrix<int> check1 = {{1, 2} , {2, 3}};
     linalg::Matrix<int> check2 = {{1, 2, 3}, {3, 4, 5}};
