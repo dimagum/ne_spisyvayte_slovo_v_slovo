@@ -126,9 +126,19 @@ int main() {
 
     linalg::BinaryMode<int>::write("matrix.bin", m_init_b);
 
-    linalg::Matrix<int> m_new = linalg::BinaryMode<int>::read("matrix.bin");
+    linalg::Matrix<int> m_new1 = linalg::BinaryMode<int>::read("matrix.bin");
 
-    std::cout << m_new;
+    std::cout << m_new1 << "\n";
+
+    linalg::Matrix<Complex<double>> m_init_b_cd = {{Complex<double>(1.1, 1.1), Complex<double>(2.2, 2.2), Complex<double>(3.3, 3.3)},
+                                       {Complex<double>(4.4, 4.4), Complex<double>(5.5, 5.5), Complex<double>(6.6, 6.6)},
+                                       {Complex<double>(7.7, 7.7), Complex<double>(8.8, 8.8), Complex<double>(9.9, 9.9)}};
+
+    linalg::BinaryMode<Complex<double>>::write("matrix.bin", m_init_b_cd);
+
+    linalg::Matrix<Complex<double>> m_new1_cd = linalg::BinaryMode<Complex<double>>::read("matrix.bin");
+
+    std::cout << m_new1_cd << "\n";
 
 // */
 
