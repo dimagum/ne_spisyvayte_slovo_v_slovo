@@ -7,17 +7,20 @@ class Complex {
     T re;
     T im;
 public:
-    Complex(T re = 0, T im = 0) : re(re), im(im) {}
-    Complex(const Complex<T> & other) : re(other.re), im(other.im) {}
+    Complex(T re = 0, T im = 0) : re(re), im(im) {}  // конструктор по умолчанию
+    Complex(const Complex<T> & other) : re(other.re), im(other.im) {}  // конструктор копирования
 
+    // геттеры
     T real() { return re; }
     T real() const { return re; }
     T imag() { return im; }
     T imag() const { return im; }
 
+    // сеттеры
     void real(T val) { this->re = val; }
     void imag(T val) { this->im = val; }
 
+    // перегрузка операторов
     Complex<T> & operator=(const Complex<T> & rhs) {
         this->re = rhs.re;
         this->im = rhs.im;
@@ -98,7 +101,7 @@ public:
         return lhs;
     }
 
-
+    // перегрузка логических операторов
     friend bool operator==(const Complex<T> & lhs, const Complex<T> & rhs) {
         return (std::abs(lhs.re - rhs.re) <= std::numeric_limits<T>::epsilon() && std::abs(lhs.im - rhs.im) <= std::numeric_limits<T>::epsilon());
     }
@@ -157,10 +160,12 @@ public:
     }
 
 
+    // комплексно сопряжённое
     friend Complex<T> operator!(Complex<T> c) {
         return Complex<T>(c.re, -c.im);
     }
 
+    // квадрат модуля комплексного числа
     T sqr_abs() {
         Complex<T> p = (*this) * !(*this);
         return p.re + p.im;
@@ -170,6 +175,7 @@ public:
         return p.re + p.im;
     }
 
+    // модуль комплексного числа
     double abs() {
         return sqrt(this->sqr_abs());
     }
@@ -191,6 +197,7 @@ public:
         return lhs;
     }
 
+    // взаимодействие с потоком вывода
     friend std::ostream & operator<<(std::ostream & out, const Complex<T> & c) {
 
         if (c.re >= 0) {

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 
+// перевод строчки в вещественное
 double string_to_double(const std::string & s) {
     std::istringstream i(s);
     double x;
@@ -21,6 +22,7 @@ namespace linalg {
     template<class T>
     struct TextMode { };
 
+    // специализация структуры для работы с бинарными файлами
     template<>
     struct BinaryMode<int> {
         static void write(const std::string & file_name, const linalg::Matrix<int> & object) {
@@ -189,6 +191,7 @@ namespace linalg {
         }
     };
 
+    // специализация структуры для работы с текстовыми файлами
     template<>
     struct TextMode<int> {
         static void write(const std::string & file_name, const linalg::Matrix<int> & object) {

@@ -5,7 +5,7 @@
 
 
 int main() {
-/*
+// /*
     linalg::Matrix<int> m1(3, 4);  // проверка конструкторов
     linalg::Matrix<int> m2(m1);
     linalg::Matrix<int> m3(std::move(m2));
@@ -26,19 +26,19 @@ int main() {
     add1 += add2;
     std::cout << add1 << "\n";
 
-    Complex<int> c1(3, 4);
+    Complex<int> c1(3, 4);  // проверка комплексных чисел
     std::cout << c1 << "\n" << c1 * c1 << "\n" << c1.abs() << "\n" << c1.sqr_abs() << "\n";
     Complex<int> c2(5, 2);
     std::cout << c1 * c2 << "\n" << c1 + c2 << "\n" << c1 - c2 << "\n";
 
+    // проверка функционала
     linalg::Matrix<int> to_det = {{1, 1, 1}, {2, 2, 1}, {1, 2, 2}};
 
-    std::cout << to_det.det() << "\n";
+    std::cout << "det: " << to_det.det() << "\n";
 
     linalg::Matrix<int> to_rank1 = {{1, 2, 3, 4}, {5, 2, 6, 7}, {9, 3, 5, 1}};
-    linalg::Matrix<int> to_rank2 = {{1, 2, 3, 4}, {5, 2, 6, 7}, {1, 2, 3, 4}};
 
-    std::cout << to_rank1.rank() << " " << to_rank2.rank() << "\n";
+    std::cout << "rank: " << to_rank1.rank() << "\n";
 
     linalg::Matrix<Complex<int>> to_rank_complex1 = {{Complex<int>(7, 1), Complex<int>(5, 1), Complex<int>(1, 5), Complex<int>(9, 2)},
                                                     {Complex<int>(9, 2), Complex<int>(7, 2), Complex<int>(4, 8), Complex<int>(4, 3)},
@@ -47,42 +47,45 @@ int main() {
                                                      {Complex<int>(9, 2), Complex<int>(7, 2), Complex<int>(4, 8), Complex<int>(4, 3)},
                                                      {Complex<int>(7, 1), Complex<int>(5, 1), Complex<int>(1, 5), Complex<int>(9, 2)}};
 
-    std::cout << to_rank_complex1.rank() << " " << to_rank_complex2.rank() << "\n";
+    std::cout << "ranks complex: " << to_rank_complex1.rank() << " " << to_rank_complex2.rank() << "\n";
 
     linalg::Matrix<int> to_norm(std::move(to_det));
 
-    std::cout << to_norm.norm() << "\n";
+    std::cout << "norm: " << to_norm.norm() << "\n";
 
     linalg::Matrix<Complex<int>> to_norm_complex = {{Complex<int>(7, 1), Complex<int>(5, 1), Complex<int>(1, 5)},
                                                     {Complex<int>(9, 2), Complex<int>(7, 2), Complex<int>(4, 8)},
                                                     {Complex<int>(4, 1), Complex<int>(8, 3), Complex<int>(7, 2)}};
 
-    std::cout << to_norm_complex.norm() << "\n";
+    std::cout << "norm complex: " << to_norm_complex.norm() << "\n";
 
     linalg::Matrix<Complex<int>> to_det_complex(std::move(to_norm_complex));
 
-    std::cout << to_det_complex.det() << "\n";
+    std::cout << "det complex: " << to_det_complex.det() << "\n";
 
     linalg::Matrix<int> inv1 = {{1, 1, 1}, {2, 2, 1}, {1, 2, 2}};
 
-    std::cout << inv1 << "\n" << inv(inv1) << "\n";
+    std::cout << inv1 << "\n" << "inverse:\n" << inv(inv1) << "\n";
 
     linalg::Matrix<> inv2 = {{1, 1, 1}, {2, 2, 1}, {1, 2, 2}};
 
-    std::cout << inv2 * inv(inv2) << "\n";
+    std::cout << "mat * inverse mat:\n" << inv2 * inv(inv2) << "\n";
 
     linalg::Matrix<Complex<int>> inv_complex(std::move(to_det_complex));
 
-    std::cout << inv_complex << "\n" << inv(inv_complex) << "\n";
+    std::cout << inv_complex << "\n" << "inverse complex:\n" << inv(inv_complex) << "\n";
 
     linalg::Matrix<Complex<>> inv_complex_double = {{Complex<double>(7, 1), Complex<double>(5, 1), Complex<double>(1, 5)},
                                                     {Complex<double>(9, 2), Complex<double>(7, 2), Complex<double>(4, 8)},
                                                     {Complex<double>(4, 1), Complex<double>(8, 3), Complex<double>(7, 2)}};
 
-    std::cout << inv_complex_double << "\n" << inv(inv_complex_double) << "\n" << inv_complex_double * inv(inv_complex_double);
-*/
+    std::cout << "mat complex * inverse mat complex:\n" << inv_complex_double << "\n" << inv(inv_complex_double)
+              << "\n" << inv_complex_double * inv(inv_complex_double);
+// */
 
-/*
+// /*
+    // тесты вывода в файлы и чтения из файлов
+    // текстовые
     linalg::Matrix<int> m_init = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
     linalg::TextMode<int>::write("matrix.txt", m_init);
@@ -118,10 +121,10 @@ int main() {
     linalg::Matrix<Complex<double>> m_newcd = linalg::TextMode<Complex<double>>::read("matrixcd.txt");
 
     std::cout << m_newcd;
-*/
+// */
 
 // /*
-
+    // бинарные
     linalg::Matrix<int> m_init_b = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
     linalg::BinaryMode<int>::write("matrix.bin", m_init_b);
@@ -141,6 +144,16 @@ int main() {
     std::cout << m_new1_cd << "\n";
 
 // */
+
+    linalg::Matrix<int> check1 = {{1, 2} , {2, 3}};
+    linalg::Matrix<int> check2 = {{1, 2, 3}, {3, 4, 5}};
+
+    try {
+        std::cout << check1 + check2 << "\n";
+    }
+    catch (std::logic_error & e) {
+        std::cout << e.what() << "\n";
+    }
 
     return 0;
 }

@@ -250,7 +250,7 @@ namespace linalg {
         }
 
         // функционал матрицы
-        friend void getDecreasedMatrix(const Matrix<T> & mat, Matrix<T> & tmp, int p, int q) {
+        friend void getDecreasedMatrix(const Matrix<T> & mat, Matrix<T> & tmp, int p, int q) { // вырезаем строчку и столбец
             unsigned n = mat.m_rows;
             int i = 0, j = 0;
 
@@ -267,7 +267,7 @@ namespace linalg {
             }
         }
 
-        T det() const {
+        T det() const {  // определитель (раскладываем по первой строчке, рекурентно)
             if (m_rows != m_cols) {
                 throw std::logic_error("not a square matrix\n");
             }
@@ -288,12 +288,13 @@ namespace linalg {
             return d;
         }
 
-        friend void row_swap(Matrix<T> & to_swap, int r1, int r2, int c) {
+        friend void row_swap(Matrix<T> & to_swap, int r1, int r2, int c) {  // меняем строчки
             for (int i = 0; i < c; ++i) {
                 std::swap(to_swap(r1, i), to_swap(r2, i));
             }
         }
 
+        // специализация поиска ранга для комплексных чисел
         template<class T_>
         struct rows_manipulation {
             static void change(Matrix<> & tmp, int col, int row, int r) {
@@ -390,6 +391,7 @@ namespace linalg {
             }
         };
 
+        // сама функция ранга
         int rank() {
             Matrix<T> tmp = (*this);
             int r = std::min(m_rows, m_cols);
@@ -414,6 +416,7 @@ namespace linalg {
             }
         };
 
+        // норма матрицы
         double norm() {
             double n = 0;
 
@@ -426,6 +429,7 @@ namespace linalg {
             return sqrt(n);
         }
 
+        // след матрицы
         T trace() {
             T tr = 0;
             for (int i = 0; i < std::min(m_rows, m_cols); ++i) {
@@ -435,6 +439,7 @@ namespace linalg {
             return tr;
         }
 
+        // транспонирование матрицы
         friend Matrix<T> transpose(const Matrix<T> & m) {
             Matrix<T> tmp(m.m_cols, m.m_rows);
 
@@ -447,7 +452,7 @@ namespace linalg {
             return tmp;
         }
 
-
+        // специализация поиска обратной матрицы для комплексных чисел
         template<class T_>
         struct adj_func {
             static void getDecreasedMatrix(const Matrix<T_> & mat, Matrix<T_> & tmp, int p, int q) {
@@ -529,41 +534,14 @@ namespace linalg {
                 }
             }
         };
-/*
-        template<class T1>
-        struct inv_func {
-            template<class T2>
-            friend Matrix<> inv(const Matrix<T> & m) {
-                if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
-                    throw std::logic_error("matrix is singular\n");
-                }
 
-                Matrix<> res(m.m_rows, m.m_cols);
-
-                adj_func<T>::get_adj(m, res);
-
-                return res;
-            }
-
-            template<class T2>
-            friend Matrix<Complex<>> inv(const Matrix<Complex<T>> & m) {
-                if (sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
-                    throw std::logic_error("matrix is singular\n");
-                }
-
-                Matrix<Complex<>> res(m.m_rows, m.m_cols);
-
-                adj_func<T>::get_adj(m, res);
-
-                return res;
-            }
-        };
-*/
+        // реализацию вынесем за класс
         template<class T1>
         friend Matrix<> inv(const Matrix<T1> & m);
         template<class T1>
         friend Matrix<Complex<>> inv(const Matrix<Complex<T1>> & m);
 
+        // возведение в степень
         friend Matrix<T> pow(const Matrix<T> & m, int n) {
             Matrix<T> tmp(m);
             for (int i = 0; i < n - 1; ++i) {
@@ -572,6 +550,8 @@ namespace linalg {
 
             return tmp;
         }
+
+        // бинарное возведение в степень
         friend Matrix<T> bin_pow(const Matrix<T> & m, int n) {
             if (n == 1) {
                 return m;
@@ -586,6 +566,7 @@ namespace linalg {
         }
     };
 
+    // реализация поиска обратной матрицы
     template<class T>
     Matrix<> inv(const Matrix<T> & m) {
         if (Matrix<T>::template sqr_func<T>::sqr_abs(m.det()) <= std::numeric_limits<double>::epsilon()) {
