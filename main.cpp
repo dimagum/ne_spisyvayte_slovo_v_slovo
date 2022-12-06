@@ -155,5 +155,10 @@ int main() {
         std::cout << e.what() << "\n";
     }
 
+    // проверка транспозиции
+    std::cout << transpose(check2) << "\n";
+    // проверка следа
+    std::cout << check2.trace() << "\n";
+
     return 0;
 }
