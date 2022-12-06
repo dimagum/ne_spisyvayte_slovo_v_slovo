@@ -337,7 +337,6 @@ namespace linalg {
                         row--;
                     }
                 }
-                std::cout << "\n" << tmp;
             }
         };
         template<class T_>
