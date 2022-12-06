@@ -1,9 +1,11 @@
 #include <iostream>
 #include "Matrix.h"
+#include "Loaders.h"
 
 
 
 int main() {
+/*
     linalg::Matrix<int> m1(3, 4);  // проверка конструкторов
     linalg::Matrix<int> m2(m1);
     linalg::Matrix<int> m3(std::move(m2));
@@ -78,6 +80,57 @@ int main() {
                                                     {Complex<double>(4, 1), Complex<double>(8, 3), Complex<double>(7, 2)}};
 
     std::cout << inv_complex_double << "\n" << inv(inv_complex_double) << "\n" << inv_complex_double * inv(inv_complex_double);
+*/
+
+/*
+    linalg::Matrix<int> m_init = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+    linalg::TextMode<int>::write("matrix.txt", m_init);
+
+    linalg::Matrix<int> m_new = linalg::TextMode<int>::read("matrix.txt");
+
+    std::cout << m_new;
+
+    linalg::Matrix<double> m_initd = {{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+
+    linalg::TextMode<double>::write("matrixd.txt", m_initd);
+
+    linalg::Matrix<double> m_newd = linalg::TextMode<double>::read("matrixd.txt");
+
+    std::cout << m_newd;
+
+    linalg::Matrix<Complex<int>> m_initci = {{Complex<int>(1, 1), Complex<int>(2, 2), Complex<int>(3, 3)},
+                                             {Complex<int>(4, 4), Complex<int>(5, 5), Complex<int>(6, 6)},
+                                             {Complex<int>(7, 7), Complex<int>(8, 8), Complex<int>(9, 9)}};
+
+    linalg::TextMode<Complex<int>>::write("matrixci.txt", m_initci);
+
+    linalg::Matrix<Complex<int>> m_newci = linalg::TextMode<Complex<int>>::read("matrixci.txt");
+
+    std::cout << m_newci;
+
+    linalg::Matrix<Complex<double>> m_initcd = {{Complex<double>(1.1, 1.1), Complex<double>(2.2, 2.2), Complex<double>(3.3, 3.3)},
+                                                {Complex<double>(4.4, 4.4), Complex<double>(5.5, 5.5), Complex<double>(6.6, 6.6)},
+                                                {Complex<double>(7.7, 7.7), Complex<double>(8.8, 8.8), Complex<double>(9.9, 9.9)}};
+
+    linalg::TextMode<Complex<double>>::write("matrixcd.txt", m_initcd);
+
+    linalg::Matrix<Complex<double>> m_newcd = linalg::TextMode<Complex<double>>::read("matrixcd.txt");
+
+    std::cout << m_newcd;
+*/
+
+// /*
+
+    linalg::Matrix<int> m_init_b = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+    linalg::BinaryMode<int>::write("matrix.bin", m_init_b);
+
+    linalg::Matrix<int> m_new = linalg::BinaryMode<int>::read("matrix.bin");
+
+    std::cout << m_new;
+
+// */
 
     return 0;
 }

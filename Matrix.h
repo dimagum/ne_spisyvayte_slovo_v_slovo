@@ -239,7 +239,7 @@ namespace linalg {
             for (int i = 0; i < m.m_rows; ++i) {
                 out << '|';
                 for (int j = 0; j < m.m_cols; ++j) {
-                    out << std::right << std::setw(7) << m(i, j);
+                    out << std::scientific << std::setprecision(4) << " " << std::right << std::setw(7) << m(i, j);
                     if (j != m.m_cols - 1) {
                         out << " ";
                     }

@@ -11,7 +11,9 @@ public:
     Complex(const Complex<T> & other) : re(other.re), im(other.im) {}
 
     T real() { return re; }
+    T real() const { return re; }
     T imag() { return im; }
+    T imag() const { return im; }
 
     void real(T val) { this->re = val; }
     void imag(T val) { this->im = val; }
