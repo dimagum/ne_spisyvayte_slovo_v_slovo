@@ -59,8 +59,8 @@ namespace linalg {
             other.m_rows = other.m_cols = 0;
         }
 
-        Matrix(const std::initializer_list<T> &lst) : m_rows(lst.size()), m_cols(1) {  //  конструктор для ситуаций m = {1, 2, 3, 4, 5, 6}
-            m_ptr = new T[m_rows * m_cols];
+        Matrix(const std::initializer_list<T> &lst)
+                : m_rows(lst.size()), m_cols(1), m_ptr(new T [m_rows * m_cols]) {  //  конструктор для ситуаций m = {1, 2, 3, 4, 5, 6}
             std::copy(lst.begin(), lst.end(), m_ptr);
         }
 
@@ -119,10 +119,6 @@ namespace linalg {
 
             return *this;
         }
-
-        //operator Matrix<T>() {
-
-        //}
 
         // доступ к элементам
         class Proxy {
