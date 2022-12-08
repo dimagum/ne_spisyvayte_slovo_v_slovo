@@ -1,36 +1,57 @@
 #pragma once
 
+#include <algorithm>
+#include <cstddef>
+#include <cstring>
+#include <cassert>
 #include <limits>
 #include <iomanip>
+#include <iostream>
+#include <type_traits>
+#include <utility>
 #include "Complex.h"
 
 namespace linalg {
     template<class T = double>
     class Matrix {
-        T *m_ptr;
-        unsigned m_rows;
-        unsigned m_cols;
+        std::size_t m_rows;
+        std::size_t m_cols;
+        T* m_ptr;
     public:
-        Matrix(int r = 0, int c = 1) {  // конструктор по умолчанию
-            m_rows = r;
-            m_cols = c;
-
-            m_ptr = new T[m_rows * m_cols];
-            for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_cols + j] = 0;
-                }
-            }
+        Matrix(int r = 0, int c = 1)
+                : m_rows(r), m_cols(c), m_ptr(new T[m_rows * m_cols]) {  // конструктор по умолчанию
+            std::fill(m_ptr, m_ptr + m_rows * m_cols, 0);
         }
 
-        Matrix(const Matrix<T> &other) : m_rows(other.m_rows), m_cols(other.m_cols) {  // конструктор копирования
-            m_ptr = new T[m_rows * m_cols];
-            for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_cols + j] = other.m_ptr[i * m_cols + j];
-                }
-            }
+        Matrix(const Matrix<T>& other) :
+                m_rows(other.m_rows), m_cols(other.m_cols),
+                m_ptr(new T[m_rows * m_cols]) {
+            copyDataFrom(other);
         }
+
+    private:
+
+        template<
+            typename OtherT,
+            typename std::enable_if<!std::is_trivially_copyable<OtherT>::value, bool>::type = true
+        >
+        void copyDataFrom(const Matrix<OtherT>& other) {
+            assert(other.m_rows == m_rows && other.m_cols == m_cols && "Sizes must be the same.");
+            std::cerr << "copy" << std::endl;
+            std::copy(other.m_ptr, other.m_ptr + m_cols * m_rows, m_ptr);
+        }
+
+        template<
+            typename OtherT,
+            typename std::enable_if<std::is_trivially_copyable<OtherT>::value, bool>::type = true
+        >
+        void copyDataFrom(const Matrix<OtherT>& other) {
+            assert(other.m_rows == m_rows && other.m_cols == m_cols && "Sizes must be the same.");
+            std::cerr << "memcpy" << std::endl;
+            std::memcpy(m_ptr, other.m_ptr, sizeof(T) * m_cols * m_rows);
+        }
+
+    public:
 
         Matrix(Matrix<T> &&other) noexcept: m_rows(other.m_rows), m_cols(other.m_cols),
                                             m_ptr(other.m_ptr) {  // конструктор копирования
@@ -38,14 +59,9 @@ namespace linalg {
             other.m_rows = other.m_cols = 0;
         }
 
-        Matrix(const std::initializer_list<T> &lst) {  //  конструктор для ситуаций m = {1, 2, 3, 4, 5, 6}
-            m_rows = lst.size();
-            m_cols = 1;
-
+        Matrix(const std::initializer_list<T> &lst) : m_rows(lst.size()), m_cols(1) {  //  конструктор для ситуаций m = {1, 2, 3, 4, 5, 6}
             m_ptr = new T[m_rows * m_cols];
-            for (int i = 0; i < m_rows; ++i) {
-                m_ptr[i * m_cols + 0] = *(lst.begin() + i);
-            }
+            std::copy(lst.begin(), lst.end(), m_ptr);
         }
 
         Matrix(const std::initializer_list<std::initializer_list<T>> &lst) {  //  конструктор для ситуаций
@@ -54,9 +70,8 @@ namespace linalg {
 
             m_ptr = new T[m_rows * m_cols];
             for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_cols + j] = *((lst.begin() + i)->begin() + j);
-                }
+                const auto& rowList = *(lst.begin() + i);
+                std::copy(rowList.begin(), rowList.end(), m_ptr + i * m_cols);
             }
         }
 
@@ -82,11 +97,8 @@ namespace linalg {
             m_cols = rhs.m_cols;
 
             m_ptr = new T[m_rows * m_cols];
-            for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_cols + j] = rhs.m_ptr[i * rhs.m_cols + j];
-                }
-            }
+            copyDataFrom(rhs);
+
             return *this;
         }
 
@@ -164,10 +176,8 @@ namespace linalg {
                 throw std::logic_error("matrix dimensions are not matching\n");
             }
 
-            for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_rows + j] += rhs.m_ptr[i * rhs.m_rows + j];
-                }
+            for (int i = 0; i < m_rows * m_cols; ++i) {
+                m_ptr[i] += rhs.m_ptr[i];
             }
 
             return *this;
@@ -183,10 +193,8 @@ namespace linalg {
                 throw std::logic_error("matrix dimensions are not matching\n");
             }
 
-            for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_rows + j] -= rhs.m_ptr[i * rhs.m_rows + j];
-                }
+            for (int i = 0; i < m_rows * m_cols; ++i) {
+                m_ptr[i] -= rhs.m_ptr[i];
             }
 
             return *this;
@@ -215,10 +223,8 @@ namespace linalg {
         }
 
         Matrix<T> &operator*=(T k) {
-            for (int i = 0; i < m_rows; ++i) {
-                for (int j = 0; j < m_cols; ++j) {
-                    m_ptr[i * m_cols + j] *= k;
-                }
+            for (int i = 0; i < m_rows * m_cols; ++i) {
+                m_ptr[i] *= k;
             }
 
             return *this;
